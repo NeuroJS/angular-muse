@@ -1,3 +1,4 @@
-<h1>
-  {{title}}
-</h1>
+<section>
+  <button (click)="connect()">Connect</button>
+  <pre>{{ this.data | async | json }}</pre>
+</section>
