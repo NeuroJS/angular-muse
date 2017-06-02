@@ -1,4 +1,5 @@
 <section>
   <button (click)="connect()">Connect</button>
+  <time-series *ngIf="data" [data]="data"></time-series>
   <pre>{{ data | async | json }}</pre>
 </section>
