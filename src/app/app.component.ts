@@ -1,4 +1,4 @@
-import { Component, NgZone } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { MuseClient } from 'muse-js';
 import { Observable } from 'rxjs/Rx';
 import { transform } from './transform';
@@ -10,7 +10,7 @@ import { transform } from './transform';
 })
 export class AppComponent {
 
-  constructor(zone: NgZone) {
+  constructor(private cd: ChangeDetectorRef) {
   }
 
   muse = new MuseClient();
@@ -19,6 +19,7 @@ export class AppComponent {
   async connect() {
     await this.muse.connect();
     await this.muse.start();
-    this.data = transform(this.muse.eegReadings);
+    this.data = transform(this.muse.eegReadings)
+      .do(() => this.cd.detectChanges());
   }
 }
