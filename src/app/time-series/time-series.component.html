@@ -1,0 +1,15 @@
+<section class="time-series" [ngClass]="{ 'loading': !amplitudes }">
+    <article class="time-series-channel" *ngFor="let canvas of canvases, let i = index">
+        <aside class="time-series-control">
+            <div class="time-series-number"
+                [ngStyle]="{ 'background': colors[i].borderColor }">
+                {{ i + 1 }}
+            </div>
+        </aside>
+        <canvas class="time-series-canvas"></canvas>
+        <aside class="time-series-amplitude"
+            [ngStyle]="{ 'background': colors[i].borderColor }">
+            {{ amplitudes[i] }} uVrms
+        </aside>
+    </article>
+</section>
