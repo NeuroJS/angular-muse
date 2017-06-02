@@ -1,13 +1,16 @@
-
-module.hot.accept();
-
 import { Observable } from 'rxjs/Rx';
+import { EEGReading } from 'muse-js';
 
-export function transform (data) {
-    console.log('Im hot');
-    return Observable.of(data)
-        .mergeMap(e => e)
-        .bufferCount(500)
-        .do(buffer => console.log(JSON.stringify(buffer)))
-        //.groupBy((e: any) => e.timestamp, e => e.timestamp)
+export function transform(data) {
+  return Observable.of(data)
+    .mergeMap(e => e)
+    .bufferCount(5)
+    .mergeMap((electrodes: EEGReading[]) =>
+      electrodes.reduce((samples, electrode) =>
+        samples.map((sample, index) => ({
+          timestamp: electrode.timestamp,
+          channelData: [...sample.channelData, electrode.samples[index]]
+        })),
+        electrodes[0].samples.map(() => ({ channelData: [] })))
+    );
 }
