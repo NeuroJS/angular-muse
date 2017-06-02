@@ -1,6 +1,3 @@
-
-module.hot.accept();
-
 import { Observable } from 'rxjs/Rx';
 
 export function transform (data) {
