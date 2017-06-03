@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input } from '@angular/core';
+import { Component, ElementRef, Input, AfterViewInit } from '@angular/core';
 import { OnInit, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs/Rx';
 import { SmoothieChart, TimeSeries } from 'smoothie';
@@ -13,16 +13,13 @@ const wsEvent = 'metric:eeg';
   templateUrl: 'time-series.component.html',
   styleUrls: ['time-series.component.css'],
 })
-export class TimeSeriesComponent implements OnInit, OnDestroy {
+export class TimeSeriesComponent implements OnInit, OnDestroy, AfterViewInit {
 
-  @Input () data;
-  constructor(private view: ElementRef, private chartService: ChartService) {
-    this.chartService = chartService;
-  }
-  
+  @Input() data;
+
   channels = 5;
   bufferTime = 1000;
-  sampleRate = 200; //hz per second
+  sampleRate = 200; // hz per second
   samplesPerMills = this.bufferTime / this.sampleRate; // 4
   millisPerPixel = 3;
   plotDelay = 1000;
@@ -35,15 +32,19 @@ export class TimeSeriesComponent implements OnInit, OnDestroy {
   timer$ = Observable.interval(this.samplesPerMills).take(this.sampleRate)
   canvases = Array(this.channels).fill(0).map(() => new SmoothieChart(this.options));
   lines = Array(this.channels).fill(0).map(() => new TimeSeries());
-  
-  ngAfterViewInit () {
+
+  constructor(private view: ElementRef, private chartService: ChartService) {
+    this.chartService = chartService;
+  }
+
+  ngAfterViewInit() {
     const channels = this.view.nativeElement.querySelectorAll('canvas');
     this.canvases.forEach((canvas, index) => {
       canvas.streamTo(channels[index], this.plotDelay);
     });
   }
 
-  ngOnInit () {
+  ngOnInit() {
     this.addTimeSeries();
     this.data.subscribe(sample => {
       console.log(sample);
@@ -53,21 +54,21 @@ export class TimeSeriesComponent implements OnInit, OnDestroy {
     });
   }
 
-  addTimeSeries () {
+  addTimeSeries() {
     this.lines.forEach((line, index) => {
-      this.canvases[index].addTimeSeries(line, { 
+      this.canvases[index].addTimeSeries(line, {
         lineWidth: 2,
         strokeStyle: this.colors[index].borderColor
       });
     });
   }
 
-  draw (amplitude, index) {
+  draw(amplitude, index) {
     this.lines[index].append(new Date().getTime(), Number(amplitude));
     this.amplitudes[index] = Number(amplitude).toFixed(2);
   }
 
-  ngOnDestroy () {
+  ngOnDestroy() {
     this.socket.removeListener(wsEvent);
   }
 
