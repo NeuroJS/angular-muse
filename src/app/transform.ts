@@ -5,8 +5,7 @@ import 'rxjs/add/operator/bufferCount';
 import 'rxjs/add/operator/mergeMap';
 
 export function transform(data: Observable<EEGReading>) {
-  return Observable.of(data)
-    .mergeMap(e => e)
+  return Observable.from(data)
     .bufferCount(5)
     .mergeMap((electrodes: EEGReading[]) =>
       electrodes.reduce((samples, electrode) =>
