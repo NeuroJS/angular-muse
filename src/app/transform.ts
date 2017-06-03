@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs/Observable';
 import { EEGReading } from 'muse-js';
 
+import 'rxjs/add/observable/from';
 import 'rxjs/add/operator/bufferCount';
 import 'rxjs/add/operator/mergeMap';
 
