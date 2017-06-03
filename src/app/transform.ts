@@ -1,7 +1,10 @@
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
 import { EEGReading } from 'muse-js';
 
-export function transform(data) {
+import 'rxjs/add/operator/bufferCount';
+import 'rxjs/add/operator/mergeMap';
+
+export function transform(data: Observable<EEGReading>) {
   return Observable.of(data)
     .mergeMap(e => e)
     .bufferCount(5)
