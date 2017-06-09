@@ -1,0 +1,12 @@
+.header-fill {
+  flex: 1;
+}
+
+.battery-level-indicator md-icon {
+  margin-right: -4px;
+  vertical-align: text-bottom;
+}
+
+.battery-level-indicator {
+  padding-right: 12px;
+}

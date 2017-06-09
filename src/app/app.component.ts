@@ -13,8 +13,10 @@ import { transform } from './transform';
 export class AppComponent implements OnInit {
   connecting = false;
   connected = false;
-  private muse = new MuseClient();
   data;
+  batteryLevel: Observable<number>;
+
+  private muse = new MuseClient();
 
   constructor(private cd: ChangeDetectorRef, private snackBar: MdSnackBar) {
   }
@@ -30,6 +32,8 @@ export class AppComponent implements OnInit {
       await this.muse.start();
       this.data = transform(this.muse.eegReadings)
         .do(() => this.cd.detectChanges());
+      this.batteryLevel = this.muse.telemetryData
+        .map(t => t.batteryLevel);
       this.connected = true;
     } catch (err) {
       this.snackBar.open('Connection failed: ' + err.toString(), 'Dismiss');
