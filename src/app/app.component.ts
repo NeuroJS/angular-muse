@@ -1,4 +1,6 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
+import { MdSnackBar } from '@angular/material';
+
 import { MuseClient } from 'muse-js';
 import { Observable } from 'rxjs/Rx';
 import { transform } from './transform';
@@ -8,18 +10,31 @@ import { transform } from './transform';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
-
-  constructor(private cd: ChangeDetectorRef) {
-  }
-
-  muse = new MuseClient();
+export class AppComponent implements OnInit {
+  connecting = false;
+  connected = false;
+  private muse = new MuseClient();
   data;
 
+  constructor(private cd: ChangeDetectorRef, private snackBar: MdSnackBar) {
+  }
+
+  ngOnInit() {
+  }
+
   async connect() {
-    await this.muse.connect();
-    await this.muse.start();
-    this.data = transform(this.muse.eegReadings)
-      .do(() => this.cd.detectChanges());
+    this.connecting = true;
+    this.snackBar.dismiss();
+    try {
+      await this.muse.connect();
+      await this.muse.start();
+      this.data = transform(this.muse.eegReadings)
+        .do(() => this.cd.detectChanges());
+      this.connected = true;
+    } catch (err) {
+      this.snackBar.open('Connection failed: ' + err.toString(), 'Dismiss');
+    } finally {
+      this.connecting = false;
+    }
   }
 }

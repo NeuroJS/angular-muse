@@ -1,5 +1,21 @@
+<md-toolbar color="primary">
+  Muse EEG Explorer
+</md-toolbar>
 <section>
-  <button (click)="connect()">Connect</button>
-  <time-series *ngIf="data" [data]="data"></time-series>
-  <pre>{{ data | async | json }}</pre>
+  <md-card *ngIf="!connected">
+    <button *ngIf="!connecting" md-raised-button color="primary" (click)="connect()">
+      <md-icon>bluetooth</md-icon>
+      Connect
+    </button>
+    <div *ngIf="connecting">
+      Connecting...
+      <md-progress-bar mode="indeterminate"></md-progress-bar>
+    </div>
+  </md-card>
+  <md-card *ngIf="data">
+    <md-card-title>Live EEG Plot</md-card-title>
+    <md-card-content>
+      <time-series [data]="data"></time-series>
+    </md-card-content>
+  </md-card>
 </section>
