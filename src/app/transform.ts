@@ -5,7 +5,12 @@ import 'rxjs/add/observable/from';
 import 'rxjs/add/operator/bufferCount';
 import 'rxjs/add/operator/mergeMap';
 
-export function transform(data: Observable<EEGReading>) {
+export interface SimpleEEGSample {
+  timestamp: number;
+  channelData: number[];
+}
+
+export function transform(data: Observable<EEGReading>): Observable<SimpleEEGSample> {
   return Observable.from(data)
     .bufferCount(5)
     .mergeMap((electrodes: EEGReading[]) =>
