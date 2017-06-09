@@ -47,7 +47,6 @@ export class TimeSeriesComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.addTimeSeries();
     this.data.subscribe(sample => {
-      console.log(sample);
       sample.channelData.forEach((electrode, index) => {
         this.draw(electrode, index);
       });
