@@ -1,20 +1,22 @@
-import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
 import { MdSnackBar } from '@angular/material';
 
 import { MuseClient } from 'muse-js';
 import { Observable } from 'rxjs/Rx';
-import { transform } from './transform';
+import { Subject } from 'rxjs/Subject';
+import { transform, SimpleEEGSample } from './transform';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   connecting = false;
   connected = false;
-  data;
-  batteryLevel: Observable<number>;
+  data: Observable<SimpleEEGSample> | null;
+  batteryLevel: Observable<number> | null;
+  destroy = new Subject<void>();
 
   private muse = new MuseClient();
 
@@ -22,6 +24,17 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.muse.connectionStatus
+      .takeUntil(this.destroy)
+      .subscribe(status => {
+        this.connected = status;
+        this.data = null;
+        this.batteryLevel = null;
+      });
+  }
+
+  ngOnDestroy() {
+    this.destroy.next();
   }
 
   async connect() {
@@ -31,14 +44,19 @@ export class AppComponent implements OnInit {
       await this.muse.connect();
       await this.muse.start();
       this.data = transform(this.muse.eegReadings)
+        .takeUntil(this.destroy)
         .do(() => this.cd.detectChanges());
       this.batteryLevel = this.muse.telemetryData
+        .takeUntil(this.destroy)
         .map(t => t.batteryLevel);
-      this.connected = true;
     } catch (err) {
       this.snackBar.open('Connection failed: ' + err.toString(), 'Dismiss');
     } finally {
       this.connecting = false;
     }
+  }
+
+  disconnect() {
+    this.muse.disconnect();
   }
 }

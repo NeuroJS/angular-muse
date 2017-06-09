@@ -4,7 +4,7 @@
   <span [hidden]="!(batteryLevel|async)" class="battery-level-indicator">
     <md-icon>battery_std</md-icon>{{batteryLevel|async|number:"1.0-0"}}%
   </span>
-  <md-icon *ngIf="connected">bluetooth_connected</md-icon>
+  <md-icon *ngIf="connected" (click)="disconnect()" title="Disconnect">bluetooth_connected</md-icon>
 </md-toolbar>
 <section>
   <md-card *ngIf="!connected">
