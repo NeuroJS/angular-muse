@@ -19,7 +19,7 @@ export class TimeSeriesComponent implements OnInit, OnDestroy, AfterViewInit {
 
   channels = 5;
   bufferTime = 1000;
-  sampleRate = 200; // hz per second
+  sampleRate = 256; // hz per second
   samplesPerMills = this.bufferTime / this.sampleRate; // 4
   millisPerPixel = 3;
   plotDelay = 1000;
