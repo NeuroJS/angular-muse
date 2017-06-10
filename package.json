@@ -5,10 +5,11 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build -prod",
     "test": "jest",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "deploy": "npm run build && firebase deploy"
   },
   "private": true,
   "dependencies": {
@@ -38,6 +39,7 @@
     "@types/jest": "^19.2.4",
     "@types/node": "~6.0.60",
     "codelyzer": "~2.0.0",
+    "firebase-tools": "^3.9.1",
     "imports-loader": "^0.7.1",
     "jasmine-core": "~2.5.2",
     "jasmine-spec-reporter": "~3.2.0",
