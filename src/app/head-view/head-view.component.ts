@@ -25,7 +25,7 @@ export class HeadViewComponent implements OnInit, OnDestroy {
   private scene: THREE.Scene;
   private camera: THREE.Camera;
   private renderer: THREE.WebGLRenderer;
-  private robotModel: THREE.Mesh;
+  private headModel: THREE.Mesh;
 
   constructor(private element: ElementRef) {
     this.scene = new THREE.Scene();
@@ -34,16 +34,15 @@ export class HeadViewComponent implements OnInit, OnDestroy {
     this.camera.lookAt(this.scene.position);
     this.scene.add(this.camera);
 
-    const light = new THREE.DirectionalLight(0xffdd00);
-    light.position.set(10, 10, 50);
+    const light = new THREE.HemisphereLight(0xffffff, 0);
+    light.position.set(10, 10, 30);
     this.scene.add(light);
     const loader = new (THREE as any).ColladaLoader();
     loader.options.convertUpAxis = true;
     loader.load('./assets/head.dae', (collada) => {
-      this.robotModel = collada.scene;
-      this.robotModel.scale.set(10, 10, 10);
-      (this.robotModel.getObjectByName('Suzanne').children[0] as THREE.Mesh).geometry.computeVertexNormals();
-      this.scene.add(this.robotModel);
+      this.headModel = collada.scene;
+      this.headModel.scale.set(10, 10, 10);
+      this.scene.add(this.headModel);
       this.modelLoaded = true;
     });
 
@@ -57,11 +56,11 @@ export class HeadViewComponent implements OnInit, OnDestroy {
     this.xyz
       .takeUntil(this.destroy)
       .subscribe(acceleration => {
-        if (this.robotModel) {
+        if (this.headModel) {
           const gVector = new THREE.Vector3(acceleration.y, -acceleration.x, acceleration.z);
           gVector.applyAxisAngle(new THREE.Vector3(1, 0, 0), -Math.PI / 2);
           const yAxis = new THREE.Vector3(0, 1, 0);
-          this.robotModel.quaternion.setFromUnitVectors(yAxis, gVector.clone().normalize());
+          this.headModel.quaternion.setFromUnitVectors(yAxis, gVector.clone().normalize());
         }
       });
   }
