@@ -4,6 +4,7 @@ import { MdSnackBar } from '@angular/material';
 import { MuseClient } from 'muse-js';
 import { Observable } from 'rxjs/Rx';
 import { Subject } from 'rxjs/Subject';
+import { XYZ } from './head-view/head-view.component';
 import { transform, SimpleEEGSample } from './transform';
 
 @Component({
@@ -16,6 +17,7 @@ export class AppComponent implements OnInit, OnDestroy {
   connected = false;
   data: Observable<SimpleEEGSample> | null;
   batteryLevel: Observable<number> | null;
+  accelerometer = new Subject<XYZ>();
   destroy = new Subject<void>();
 
   private muse = new MuseClient();
@@ -49,6 +51,10 @@ export class AppComponent implements OnInit, OnDestroy {
       this.batteryLevel = this.muse.telemetryData
         .takeUntil(this.destroy)
         .map(t => t.batteryLevel);
+      this.muse.accelerometerData
+        .takeUntil(this.destroy)
+        .map(reading => reading.samples[reading.samples.length - 1])
+        .subscribe(this.accelerometer);
     } catch (err) {
       this.snackBar.open('Connection failed: ' + err.toString(), 'Dismiss');
     } finally {

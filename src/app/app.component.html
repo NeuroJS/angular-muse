@@ -24,4 +24,10 @@
       <time-series [data]="data"></time-series>
     </md-card-content>
   </md-card>
+  <md-card *ngIf="connected">
+    <md-card-title>Head Position</md-card-title>
+    <md-card-content>
+      <app-head-view [xyz]="accelerometer"></app-head-view>
+    </md-card-content>
+  </md-card>
 </section>
