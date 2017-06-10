@@ -8,11 +8,13 @@ import { MaterialModule } from '@angular/material';
 import { AppComponent } from './app.component';
 import { TimeSeriesComponent } from './time-series/time-series.component';
 import { ChartService } from './shared/chart.service';
+import { HeadViewComponent } from './head-view/head-view.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    TimeSeriesComponent
+    TimeSeriesComponent,
+    HeadViewComponent
   ],
   imports: [
     BrowserModule,
