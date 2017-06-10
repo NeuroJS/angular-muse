@@ -1,3 +1,8 @@
+.app-icon {
+  width: 40px;
+  margin-right: 10px;
+}
+
 .header-fill {
   flex: 1;
 }
