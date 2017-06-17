@@ -1,7 +1,7 @@
 import { Component, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
 import { MdSnackBar } from '@angular/material';
 
-import { MuseClient } from 'muse-js';
+import { MuseClient, MuseControlResponse } from 'muse-js';
 import { Observable } from 'rxjs/Rx';
 import { Subject } from 'rxjs/Subject';
 import { XYZ } from './head-view/head-view.component';
@@ -17,6 +17,7 @@ export class AppComponent implements OnInit, OnDestroy {
   connected = false;
   data: Observable<SimpleEEGSample> | null;
   batteryLevel: Observable<number> | null;
+  controlResponses: Observable<MuseControlResponse>;
   accelerometer = new Subject<XYZ>();
   destroy = new Subject<void>();
 
@@ -44,6 +45,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.snackBar.dismiss();
     try {
       await this.muse.connect();
+      this.controlResponses = this.muse.controlResponses;
       await this.muse.start();
       this.data = transform(this.muse.eegReadings)
         .takeUntil(this.destroy)

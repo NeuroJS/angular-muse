@@ -9,12 +9,14 @@ import { AppComponent } from './app.component';
 import { TimeSeriesComponent } from './time-series/time-series.component';
 import { ChartService } from './shared/chart.service';
 import { HeadViewComponent } from './head-view/head-view.component';
+import { HeadsetInfoComponent } from './headset-info/headset-info.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     TimeSeriesComponent,
-    HeadViewComponent
+    HeadViewComponent,
+    HeadsetInfoComponent
   ],
   imports: [
     BrowserModule,
