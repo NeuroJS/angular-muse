@@ -2,8 +2,12 @@ import { Component, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
 import { MdSnackBar } from '@angular/material';
 
 import { MuseClient, MuseControlResponse, zipSamples, EEGSample } from 'muse-js';
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
+
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/takeUntil';
+
 import { XYZ } from './head-view/head-view.component';
 
 @Component({

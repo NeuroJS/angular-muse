@@ -1,7 +1,11 @@
 import { Component, ElementRef, Input, AfterViewInit } from '@angular/core';
 import { OnInit, OnDestroy } from '@angular/core';
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
 import { SmoothieChart, TimeSeries } from 'smoothie';
+
+import 'rxjs/add/observable/interval';
+import 'rxjs/add/operator/take';
+
 import { ChartService } from '../shared/chart.service';
 
 @Component({

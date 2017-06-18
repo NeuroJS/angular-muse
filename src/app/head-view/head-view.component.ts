@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ElementRef, OnDestroy } from '@angular/core';
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 
 export interface XYZ {
