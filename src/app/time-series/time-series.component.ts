@@ -17,7 +17,8 @@ export class TimeSeriesComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @Input() data;
 
-  channels = 5;
+  channels = 4;
+  channelNames = ['TP9', 'AF7', 'AF8', 'TP10'];
   bufferTime = 1000;
   sampleRate = 256; // hz per second
   samplesPerMills = this.bufferTime / this.sampleRate; // 4
@@ -29,7 +30,7 @@ export class TimeSeriesComponent implements OnInit, OnDestroy, AfterViewInit {
   socket = io(wsUrl);
   options = this.chartService.getChartSmoothieDefaults({ millisPerPixel: this.millisPerPixel });
   colors = this.chartService.getColors();
-  timer$ = Observable.interval(this.samplesPerMills).take(this.sampleRate)
+  timer$ = Observable.interval(this.samplesPerMills).take(this.sampleRate);
   canvases = Array(this.channels).fill(0).map(() => new SmoothieChart(this.options));
   lines = Array(this.channels).fill(0).map(() => new TimeSeries());
 
@@ -47,7 +48,7 @@ export class TimeSeriesComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.addTimeSeries();
     this.data.subscribe(sample => {
-      sample.channelData.forEach((electrode, index) => {
+      sample.channelData.slice(0, this.channels).forEach((electrode, index) => {
         this.draw(electrode, index);
       });
     });

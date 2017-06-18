@@ -30,13 +30,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 40px;
+  width: 48px;
   border-right: 1px solid #dddddd;
 }
 
 .time-series-number {
   height: 16px;
-  width: 16px;
+  width: 28px;
   font-size: 13px;
   font-weight: 300;
   border-radius: 50%;
