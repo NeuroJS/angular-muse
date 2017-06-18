@@ -1,11 +1,10 @@
 import { Component, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
 import { MdSnackBar } from '@angular/material';
 
-import { MuseClient, MuseControlResponse } from 'muse-js';
+import { MuseClient, MuseControlResponse, zipSamples, EEGSample } from 'muse-js';
 import { Observable } from 'rxjs/Rx';
 import { Subject } from 'rxjs/Subject';
 import { XYZ } from './head-view/head-view.component';
-import { transform, SimpleEEGSample } from './transform';
 
 @Component({
   selector: 'app-root',
@@ -15,7 +14,7 @@ import { transform, SimpleEEGSample } from './transform';
 export class AppComponent implements OnInit, OnDestroy {
   connecting = false;
   connected = false;
-  data: Observable<SimpleEEGSample> | null;
+  data: Observable<EEGSample> | null;
   batteryLevel: Observable<number> | null;
   controlResponses: Observable<MuseControlResponse>;
   accelerometer = new Subject<XYZ>();
@@ -47,7 +46,7 @@ export class AppComponent implements OnInit, OnDestroy {
       await this.muse.connect();
       this.controlResponses = this.muse.controlResponses;
       await this.muse.start();
-      this.data = transform(this.muse.eegReadings)
+      this.data = zipSamples(this.muse.eegReadings)
         .takeUntil(this.destroy)
         .do(() => this.cd.detectChanges());
       this.batteryLevel = this.muse.telemetryData

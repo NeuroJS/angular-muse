@@ -4662,9 +4662,9 @@ ms@^0.7.1:
   version "0.7.3"
   resolved "https://registry.yarnpkg.com/ms/-/ms-0.7.3.tgz#708155a5e44e33f5fd0fc53e81d0d40a91be1fff"
 
-muse-js@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/muse-js/-/muse-js-0.4.0.tgz#90c179f24150cc5cae7dfa9c764604f23f35294c"
+muse-js@^0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/muse-js/-/muse-js-0.4.1.tgz#b0babe3fe1bde07fb20b992baf563a951bcba922"
   dependencies:
     "@types/text-encoding" "^0.0.30"
     "@types/web-bluetooth" "^0.0.2"
@@ -7692,16 +7692,9 @@ write-file-atomic@^2.0.0:
     imurmurhash "^0.1.4"
     slide "^1.1.5"
 
-ws@1.1.1:
+ws@1.1.1, ws@^1.0.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/ws/-/ws-1.1.1.tgz#082ddb6c641e85d4bb451f03d52f06eabdb1f018"
-  dependencies:
-    options ">=0.0.5"
-    ultron "1.0.x"
-
-ws@^1.0.1:
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-1.1.4.tgz#57f40d036832e5f5055662a397c4de76ed66bf61"
   dependencies:
     options ">=0.0.5"
     ultron "1.0.x"
