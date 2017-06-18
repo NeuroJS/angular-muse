@@ -3,10 +3,6 @@ import { OnInit, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs/Rx';
 import { SmoothieChart, TimeSeries } from 'smoothie';
 import { ChartService } from '../shared/chart.service';
-import * as io from 'socket.io-client';
-
-const wsUrl = 'http://localhost:4301';
-const wsEvent = 'metric:eeg';
 
 @Component({
   selector: 'time-series',
@@ -27,7 +23,6 @@ export class TimeSeriesComponent implements OnInit, OnDestroy, AfterViewInit {
 
   stream$;
   amplitudes = [];
-  socket = io(wsUrl);
   options = this.chartService.getChartSmoothieDefaults({ millisPerPixel: this.millisPerPixel });
   colors = this.chartService.getColors();
   timer$ = Observable.interval(this.samplesPerMills).take(this.sampleRate);
@@ -69,7 +64,6 @@ export class TimeSeriesComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy() {
-    this.socket.removeListener(wsEvent);
   }
 
 }
