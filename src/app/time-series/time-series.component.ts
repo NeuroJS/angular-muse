@@ -2,6 +2,7 @@ import { Component, ElementRef, Input, AfterViewInit } from '@angular/core';
 import { OnInit, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { SmoothieChart, TimeSeries } from 'smoothie';
+import { channelNames, EEGSample } from 'muse-js';
 
 import 'rxjs/add/observable/interval';
 import 'rxjs/add/operator/take';
@@ -15,10 +16,10 @@ import { ChartService } from '../shared/chart.service';
 })
 export class TimeSeriesComponent implements OnInit, OnDestroy, AfterViewInit {
 
-  @Input() data;
+  @Input() data: Observable<EEGSample>;
 
   channels = 4;
-  channelNames = ['TP9', 'AF7', 'AF8', 'TP10'];
+  channelNames = channelNames.slice(0, this.channels);
   bufferTime = 1000;
   sampleRate = 256; // hz per second
   samplesPerMills = this.bufferTime / this.sampleRate; // 4
@@ -47,7 +48,7 @@ export class TimeSeriesComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.addTimeSeries();
     this.data.subscribe(sample => {
-      sample.channelData.slice(0, this.channels).forEach((electrode, index) => {
+      sample.data.slice(0, this.channels).forEach((electrode, index) => {
         this.draw(electrode, index);
       });
     });
