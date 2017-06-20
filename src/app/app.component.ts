@@ -60,6 +60,7 @@ export class AppComponent implements OnInit, OnDestroy {
         .takeUntil(this.destroy)
         .map(reading => reading.samples[reading.samples.length - 1])
         .subscribe(this.accelerometer);
+      await this.muse.deviceInfo();
     } catch (err) {
       this.snackBar.open('Connection failed: ' + err.toString(), 'Dismiss');
     } finally {
