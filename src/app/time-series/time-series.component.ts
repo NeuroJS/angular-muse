@@ -20,17 +20,18 @@ export class TimeSeriesComponent implements OnInit, OnDestroy, AfterViewInit {
 
   channels = 4;
   channelNames = channelNames.slice(0, this.channels);
-  bufferTime = 1000;
-  sampleRate = 256; // hz per second
+  bufferTime = 5000;
+  sampleRate = 256.; // hz
   samplesPerMills = this.bufferTime / this.sampleRate; // 4
-  millisPerPixel = 3;
-  plotDelay = 1000;
+  millisPerPixel = 8;
 
-  stream$;
   amplitudes = [];
-  options = this.chartService.getChartSmoothieDefaults({ millisPerPixel: this.millisPerPixel });
+  options = this.chartService.getChartSmoothieDefaults({
+    millisPerPixel: this.millisPerPixel,
+    maxValue: 1000,
+    minValue: -1000
+  });
   colors = this.chartService.getColors();
-  timer$ = Observable.interval(this.samplesPerMills).take(this.sampleRate);
   canvases = Array(this.channels).fill(0).map(() => new SmoothieChart(this.options));
   lines = Array(this.channels).fill(0).map(() => new TimeSeries());
 
@@ -41,7 +42,7 @@ export class TimeSeriesComponent implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit() {
     const channels = this.view.nativeElement.querySelectorAll('canvas');
     this.canvases.forEach((canvas, index) => {
-      canvas.streamTo(channels[index], this.plotDelay);
+      canvas.streamTo(channels[index]);
     });
   }
 
@@ -63,9 +64,9 @@ export class TimeSeriesComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  draw(amplitude, index) {
-    this.lines[index].append(new Date().getTime(), Number(amplitude));
-    this.amplitudes[index] = Number(amplitude).toFixed(2);
+  draw(amplitude: number, index: number) {
+    this.lines[index].append(new Date().getTime(), amplitude);
+    this.amplitudes[index] = amplitude.toFixed(2);
   }
 
   ngOnDestroy() {
