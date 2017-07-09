@@ -6,6 +6,7 @@ import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 
 import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/share';
 import 'rxjs/add/operator/takeUntil';
 
 import { XYZ } from './head-view/head-view.component';
@@ -52,7 +53,8 @@ export class AppComponent implements OnInit, OnDestroy {
       await this.muse.start();
       this.data = zipSamples(this.muse.eegReadings)
         .takeUntil(this.destroy)
-        .do(() => this.cd.detectChanges());
+        .do(() => this.cd.detectChanges())
+        .share();
       this.batteryLevel = this.muse.telemetryData
         .takeUntil(this.destroy)
         .map(t => t.batteryLevel);
