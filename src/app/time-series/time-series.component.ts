@@ -3,11 +3,14 @@ import { OnInit, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { SmoothieChart, TimeSeries } from 'smoothie';
 import { channelNames, EEGSample } from 'muse-js';
+import { BandpassFilter } from './../shared/bandpass-filter';
 
 import 'rxjs/add/observable/interval';
 import 'rxjs/add/operator/take';
 
 import { ChartService } from '../shared/chart.service';
+
+const samplingFrequency = 256;
 
 @Component({
   selector: 'time-series',
@@ -18,25 +21,29 @@ export class TimeSeriesComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @Input() data: Observable<EEGSample>;
 
-  channels = 4;
-  channelNames = channelNames.slice(0, this.channels);
-  bufferTime = 5000;
-  sampleRate = 256.; // hz
-  samplesPerMills = this.bufferTime / this.sampleRate; // 4
-  millisPerPixel = 8;
+  filter = false;
 
-  amplitudes = [];
-  options = this.chartService.getChartSmoothieDefaults({
-    millisPerPixel: this.millisPerPixel,
+  readonly channels = 4;
+  readonly channelNames = channelNames.slice(0, this.channels);
+  readonly amplitudes = [];
+
+  readonly options = this.chartService.getChartSmoothieDefaults({
+    millisPerPixel: 8,
     maxValue: 1000,
     minValue: -1000
   });
-  colors = this.chartService.getColors();
-  canvases = Array(this.channels).fill(0).map(() => new SmoothieChart(this.options));
-  lines = Array(this.channels).fill(0).map(() => new TimeSeries());
+  readonly colors = this.chartService.getColors();
+  readonly canvases = Array(this.channels).fill(0).map(() => new SmoothieChart(this.options));
+
+  private readonly lines = Array(this.channels).fill(0).map(() => new TimeSeries());
+  private readonly bandpassFilters: BandpassFilter[] = [];
 
   constructor(private view: ElementRef, private chartService: ChartService) {
     this.chartService = chartService;
+
+    for (let i = 0; i < this.channels; i++) {
+      this.bandpassFilters[i] = new BandpassFilter(samplingFrequency, 1, 30);
+    }
   }
 
   ngAfterViewInit() {
@@ -65,6 +72,10 @@ export class TimeSeriesComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   draw(amplitude: number, index: number) {
+    const filter = this.bandpassFilters[index];
+    if (this.filter && !isNaN(amplitude)) {
+      amplitude = filter.next(amplitude);
+    }
     this.lines[index].append(new Date().getTime(), amplitude);
     this.amplitudes[index] = amplitude.toFixed(2);
   }
