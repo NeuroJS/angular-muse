@@ -5,6 +5,7 @@ import { MuseClient, MuseControlResponse, zipSamples, EEGSample } from 'muse-js'
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 
+import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/share';
 import 'rxjs/add/operator/takeUntil';
