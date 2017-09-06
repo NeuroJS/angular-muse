@@ -9,7 +9,7 @@ export interface XYZ {
 }
 
 import * as THREE from 'three';
-import 'imports-loader?THREE=three!three/examples/js/loaders/ColladaLoader';
+import 'imports-loader?THREE=three!three/examples/js/loaders/GLTF2Loader';
 
 @Component({
   selector: 'app-head-view',
@@ -34,12 +34,15 @@ export class HeadViewComponent implements OnInit, OnDestroy {
     this.camera.lookAt(this.scene.position);
     this.scene.add(this.camera);
 
-    const light = new THREE.HemisphereLight(0xffffff, 0);
-    light.position.set(10, 10, 30);
-    this.scene.add(light);
-    const loader = new (THREE as any).ColladaLoader();
-    loader.options.convertUpAxis = true;
-    loader.load('./assets/head.dae', (collada) => {
+    const directional = new THREE.DirectionalLight(0xffffff, 0.6);
+    directional.position.set(6, 3, 9);
+    this.scene.add(directional);
+
+    const ambient = new THREE.AmbientLight(0x4c4c4c, 1);
+    this.scene.add(ambient);
+
+    const loader = new (THREE as any).GLTF2Loader();
+    loader.load('./assets/head.gltf', (collada) => {
       this.headModel = collada.scene;
       this.headModel.scale.set(10, 10, 10);
       this.scene.add(this.headModel);
