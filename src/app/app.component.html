@@ -30,6 +30,12 @@
       <app-head-view [xyz]="accelerometer"></app-head-view>
     </md-card-content>
   </md-card>
+  <md-card *ngIf="data">
+    <md-card-title>Recording</md-card-title>
+    <md-card-content>
+      <app-recorder [data]="data"></app-recorder>
+    </md-card-content>
+  </md-card>
   <md-card *ngIf="connected">
     <app-headset-info [controlResponses]="controlResponses"></app-headset-info>
   </md-card>

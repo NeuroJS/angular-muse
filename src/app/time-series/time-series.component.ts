@@ -1,12 +1,16 @@
 import { Component, ElementRef, Input, AfterViewInit } from '@angular/core';
 import { OnInit, OnDestroy } from '@angular/core';
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
 import { SmoothieChart, TimeSeries } from 'smoothie';
-import { ChartService } from '../shared/chart.service';
-import * as io from 'socket.io-client';
+import { channelNames, EEGSample } from 'muse-js';
+import { BandpassFilter } from './../shared/bandpass-filter';
 
-const wsUrl = 'http://localhost:4301';
-const wsEvent = 'metric:eeg';
+import 'rxjs/add/observable/interval';
+import 'rxjs/add/operator/take';
+
+import { ChartService } from '../shared/chart.service';
+
+const samplingFrequency = 256;
 
 @Component({
   selector: 'time-series',
@@ -15,39 +19,44 @@ const wsEvent = 'metric:eeg';
 })
 export class TimeSeriesComponent implements OnInit, OnDestroy, AfterViewInit {
 
-  @Input() data;
+  @Input() data: Observable<EEGSample>;
 
-  channels = 5;
-  bufferTime = 1000;
-  sampleRate = 256; // hz per second
-  samplesPerMills = this.bufferTime / this.sampleRate; // 4
-  millisPerPixel = 3;
-  plotDelay = 1000;
+  filter = false;
 
-  stream$;
-  amplitudes = [];
-  socket = io(wsUrl);
-  options = this.chartService.getChartSmoothieDefaults({ millisPerPixel: this.millisPerPixel });
-  colors = this.chartService.getColors();
-  timer$ = Observable.interval(this.samplesPerMills).take(this.sampleRate)
-  canvases = Array(this.channels).fill(0).map(() => new SmoothieChart(this.options));
-  lines = Array(this.channels).fill(0).map(() => new TimeSeries());
+  readonly channels = 4;
+  readonly channelNames = channelNames.slice(0, this.channels);
+  readonly amplitudes = [];
+
+  readonly options = this.chartService.getChartSmoothieDefaults({
+    millisPerPixel: 8,
+    maxValue: 1000,
+    minValue: -1000
+  });
+  readonly colors = this.chartService.getColors();
+  readonly canvases = Array(this.channels).fill(0).map(() => new SmoothieChart(this.options));
+
+  private readonly lines = Array(this.channels).fill(0).map(() => new TimeSeries());
+  private readonly bandpassFilters: BandpassFilter[] = [];
 
   constructor(private view: ElementRef, private chartService: ChartService) {
     this.chartService = chartService;
+
+    for (let i = 0; i < this.channels; i++) {
+      this.bandpassFilters[i] = new BandpassFilter(samplingFrequency, 1, 30);
+    }
   }
 
   ngAfterViewInit() {
     const channels = this.view.nativeElement.querySelectorAll('canvas');
     this.canvases.forEach((canvas, index) => {
-      canvas.streamTo(channels[index], this.plotDelay);
+      canvas.streamTo(channels[index]);
     });
   }
 
   ngOnInit() {
     this.addTimeSeries();
     this.data.subscribe(sample => {
-      sample.channelData.forEach((electrode, index) => {
+      sample.data.slice(0, this.channels).forEach((electrode, index) => {
         this.draw(electrode, index);
       });
     });
@@ -62,13 +71,16 @@ export class TimeSeriesComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  draw(amplitude, index) {
-    this.lines[index].append(new Date().getTime(), Number(amplitude));
-    this.amplitudes[index] = Number(amplitude).toFixed(2);
+  draw(amplitude: number, index: number) {
+    const filter = this.bandpassFilters[index];
+    if (this.filter && !isNaN(amplitude)) {
+      amplitude = filter.next(amplitude);
+    }
+    this.lines[index].append(new Date().getTime(), amplitude);
+    this.amplitudes[index] = amplitude.toFixed(2);
   }
 
   ngOnDestroy() {
-    this.socket.removeListener(wsEvent);
   }
 
 }

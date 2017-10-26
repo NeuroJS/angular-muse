@@ -2,8 +2,14 @@ import { Component, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
 import { MdSnackBar } from '@angular/material';
 
 import { MuseClient, MuseControlResponse, zipSamples, EEGSample } from 'muse-js';
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
+
+import 'rxjs/add/operator/do';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/share';
+import 'rxjs/add/operator/takeUntil';
+
 import { XYZ } from './head-view/head-view.component';
 
 @Component({
@@ -48,7 +54,8 @@ export class AppComponent implements OnInit, OnDestroy {
       await this.muse.start();
       this.data = zipSamples(this.muse.eegReadings)
         .takeUntil(this.destroy)
-        .do(() => this.cd.detectChanges());
+        .do(() => this.cd.detectChanges())
+        .share();
       this.batteryLevel = this.muse.telemetryData
         .takeUntil(this.destroy)
         .map(t => t.batteryLevel);
@@ -56,6 +63,7 @@ export class AppComponent implements OnInit, OnDestroy {
         .takeUntil(this.destroy)
         .map(reading => reading.samples[reading.samples.length - 1])
         .subscribe(this.accelerometer);
+      await this.muse.deviceInfo();
     } catch (err) {
       this.snackBar.open('Connection failed: ' + err.toString(), 'Dismiss');
     } finally {

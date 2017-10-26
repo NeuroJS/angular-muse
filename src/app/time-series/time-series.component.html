@@ -3,7 +3,7 @@
         <aside class="time-series-control">
             <div class="time-series-number"
                 [ngStyle]="{ 'background': colors[i].borderColor }">
-                {{ i + 1 }}
+                {{ channelNames[i] }}
             </div>
         </aside>
         <canvas class="time-series-canvas"></canvas>
@@ -12,4 +12,8 @@
             {{ amplitudes[i] }} uVrms
         </aside>
     </article>
+
+    <div class="graph-settings">
+      <md-checkbox [(ngModel)]="filter">Filter</md-checkbox>
+    </div>
 </section>
