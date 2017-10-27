@@ -26,6 +26,8 @@ export class TimeSeriesComponent implements OnInit, OnDestroy, AfterViewInit {
   readonly channels = 4;
   readonly channelNames = channelNames.slice(0, this.channels);
   readonly amplitudes = [];
+  readonly uVrms = [0, 0, 0, 0];
+  readonly uMeans = [0, 0, 0, 0];
 
   readonly options = this.chartService.getChartSmoothieDefaults({
     millisPerPixel: 8,
@@ -76,6 +78,10 @@ export class TimeSeriesComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.filter && !isNaN(amplitude)) {
       amplitude = filter.next(amplitude);
     }
+
+    this.uMeans[index] = 0.995 * this.uMeans[index] + 0.005 * amplitude
+    this.uVrms[index] = Math.sqrt(0.995 * this.uVrms[index]**2 + 0.005 * (amplitude - this.uMeans[index])**2)
+
     this.lines[index].append(new Date().getTime(), amplitude);
     this.amplitudes[index] = amplitude.toFixed(2);
   }
