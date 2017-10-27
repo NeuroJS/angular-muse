@@ -9,7 +9,7 @@
         <canvas class="time-series-canvas"></canvas>
         <aside class="time-series-amplitude"
             [ngStyle]="{ 'background': colors[i].borderColor }">
-            {{ amplitudes[i] }} uVrms
+            {{ uVrms[i].toFixed(1) }} uVrms
         </aside>
     </article>
 
